@@ -11,15 +11,14 @@
 		8D80124F2AD22B8000DC7D8B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D80124E2AD22B8000DC7D8B /* ContentView.swift */; };
 		8D8012512AD22B8200DC7D8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D8012502AD22B8200DC7D8B /* Assets.xcassets */; };
 		8D8012542AD22B8200DC7D8B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D8012532AD22B8200DC7D8B /* Preview Assets.xcassets */; };
-		8D80127D2AD22DCE00DC7D8B /* opencv2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D80127C2AD22DCE00DC7D8B /* opencv2.xcframework */; };
 		8D80127F2AD22E0C00DC7D8B /* PoseEstimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D80127E2AD22E0C00DC7D8B /* PoseEstimation.swift */; };
-		8D8012812AD22E3300DC7D8B /* PoseRender in Frameworks */ = {isa = PBXBuildFile; productRef = 8D8012802AD22E3300DC7D8B /* PoseRender */; };
 		8D8012832AD22E5D00DC7D8B /* AffineTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8012822AD22E5D00DC7D8B /* AffineTransform.swift */; };
 		8D8012852AD22EF500DC7D8B /* ObjectDetaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8012842AD22EF500DC7D8B /* ObjectDetaction.swift */; };
 		8D8012882AD22F5D00DC7D8B /* vitpose-b256x192_fp16.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D8012862AD22F5D00DC7D8B /* vitpose-b256x192_fp16.mlmodel */; };
 		8D8012892AD22F5D00DC7D8B /* yolov7-tiny_fp16.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D8012872AD22F5D00DC7D8B /* yolov7-tiny_fp16.mlmodel */; };
 		8D80128B2AD22F7C00DC7D8B /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8D80128A2AD22F7C00DC7D8B /* test.jpg */; };
 		8D865C7D2AD29204003A63E2 /* KeypointProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D865C7C2AD29204003A63E2 /* KeypointProcess.swift */; };
+		8D9095E12AD2D15B00411D0E /* PoseRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9095E02AD2D15B00411D0E /* PoseRender.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,8 +27,6 @@
 		8D80124E2AD22B8000DC7D8B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8D8012502AD22B8200DC7D8B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8D8012532AD22B8200DC7D8B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		8D8012762AD22D9600DC7D8B /* PoseRender */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = PoseRender; sourceTree = "<group>"; };
-		8D80127C2AD22DCE00DC7D8B /* opencv2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = opencv2.xcframework; sourceTree = "<group>"; };
 		8D80127E2AD22E0C00DC7D8B /* PoseEstimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseEstimation.swift; sourceTree = "<group>"; };
 		8D8012822AD22E5D00DC7D8B /* AffineTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AffineTransform.swift; sourceTree = "<group>"; };
 		8D8012842AD22EF500DC7D8B /* ObjectDetaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectDetaction.swift; sourceTree = "<group>"; };
@@ -37,6 +34,7 @@
 		8D8012872AD22F5D00DC7D8B /* yolov7-tiny_fp16.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = "yolov7-tiny_fp16.mlmodel"; sourceTree = "<group>"; };
 		8D80128A2AD22F7C00DC7D8B /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
 		8D865C7C2AD29204003A63E2 /* KeypointProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeypointProcess.swift; sourceTree = "<group>"; };
+		8D9095E02AD2D15B00411D0E /* PoseRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseRender.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,8 +42,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D80127D2AD22DCE00DC7D8B /* opencv2.xcframework in Frameworks */,
-				8D8012812AD22E3300DC7D8B /* PoseRender in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,7 +51,6 @@
 		8D8012402AD22B8000DC7D8B = {
 			isa = PBXGroup;
 			children = (
-				8D8012762AD22D9600DC7D8B /* PoseRender */,
 				8D80124B2AD22B8000DC7D8B /* TopDownPoseEstimation */,
 				8D80124A2AD22B8000DC7D8B /* Products */,
 				8D8012772AD22DB800DC7D8B /* Frameworks */,
@@ -79,6 +74,7 @@
 				8D80127E2AD22E0C00DC7D8B /* PoseEstimation.swift */,
 				8D865C7C2AD29204003A63E2 /* KeypointProcess.swift */,
 				8D8012822AD22E5D00DC7D8B /* AffineTransform.swift */,
+				8D9095E02AD2D15B00411D0E /* PoseRender.swift */,
 				8D80128A2AD22F7C00DC7D8B /* test.jpg */,
 				8D8012862AD22F5D00DC7D8B /* vitpose-b256x192_fp16.mlmodel */,
 				8D8012872AD22F5D00DC7D8B /* yolov7-tiny_fp16.mlmodel */,
@@ -99,7 +95,6 @@
 		8D8012772AD22DB800DC7D8B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8D80127C2AD22DCE00DC7D8B /* opencv2.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -121,7 +116,6 @@
 			);
 			name = TopDownPoseEstimation;
 			packageProductDependencies = (
-				8D8012802AD22E3300DC7D8B /* PoseRender */,
 			);
 			productName = TopDownPoseEstimation;
 			productReference = 8D8012492AD22B8000DC7D8B /* TopDownPoseEstimation.app */;
@@ -186,6 +180,7 @@
 				8D8012882AD22F5D00DC7D8B /* vitpose-b256x192_fp16.mlmodel in Sources */,
 				8D80127F2AD22E0C00DC7D8B /* PoseEstimation.swift in Sources */,
 				8D8012852AD22EF500DC7D8B /* ObjectDetaction.swift in Sources */,
+				8D9095E12AD2D15B00411D0E /* PoseRender.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,13 +386,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		8D8012802AD22E3300DC7D8B /* PoseRender */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = PoseRender;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8D8012412AD22B8000DC7D8B /* Project object */;
 }

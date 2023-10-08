@@ -1,11 +1,10 @@
 import SwiftUI
 import Vision
-import PoseRender
 
 class PoseEstimation: ObservableObject {
   
   @Published var uiImage: UIImage?
-  var keypoints = [Float32]()
+  var keypoints = [Double]()
   let modelWidth = 192
   let modelHeight = 256
   let keypointsNumber = 17
@@ -37,7 +36,7 @@ class PoseEstimation: ObservableObject {
   }
   
   func run(sourceImage: UIImage, boxes: [Double]) -> UIImage? {
-    keypoints = [Float32]()
+    keypoints = [Double]()
     let peopleNum = boxes.count / 4
     for num in 0..<peopleNum {
       box = CGRect(x: boxes[num*4], y: boxes[num*4+1], width: boxes[num*4+2], height: boxes[num*4+3])
@@ -46,9 +45,8 @@ class PoseEstimation: ObservableObject {
         runCoreML(uiImage: uiImage)
       }
     }
-    let render = PoseRender()
-    var boxes = boxes.map { Float32($0) }
-    return render.renderHumanPose(sourceImage, keypoints: &keypoints, peopleNum: Int32(peopleNum), boxes: &boxes)
+    let render = PoseRender(sourceImage, keypoints: keypoints, boxes: boxes, keypointsNumber: keypointsNumber)
+    return render.render()
   }
   
   func runCoreML(uiImage: UIImage) {
@@ -70,8 +68,6 @@ class PoseEstimation: ObservableObject {
     let floatBuffer = UnsafeBufferPointer(start: floatPtr, count: length)
     
     let results = keypointProcess.postExecute(heatmap: floatBuffer.map{ Double($0) }, box: box )
-    let preds: [Float32] = results.map { Float32($0) }
-    
-    keypoints.append(contentsOf: preds)
+    keypoints.append(contentsOf: results)
   }
 }

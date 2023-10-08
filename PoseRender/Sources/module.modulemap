@@ -1,4 +1,0 @@
-module PoseRender {
-    header "include/PoseRender.h"
-    export *
-}

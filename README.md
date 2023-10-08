@@ -1,6 +1,5 @@
 ## What is this
-TopDown Pose Estimation on iOS.  
-Implemented with PureSwift except for rendering processing.
+TopDown Pose Estimation on iOS and PureSwift.  
 
 - BBox: Yolov7-tiny
 - Pose Estimation: ViTPose
@@ -13,18 +12,6 @@ $ cd TopDownPoseEstimation/TopDownPoseEstimation
 $ curl -OL https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/vitpose-b256x192_fp16.mlmodel
 $ curl -OL https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yolov7-tiny_fp16.mlmodel
 ```
-
-### [Create opencv2.xcframework](https://github.com/otmb/TopDownPoseEstimation/blob/main/PoseRender/minimum_opencv.md)
-
-- [opencv_option.txt](https://github.com/otmb/TopDownPoseEstimation/blob/main/PoseRender/opencv_option.txt)
-
-Setting > General > Frameworks, Libraries, and Embedded Content
-```
-Add opencv2.xcframework 
-Do Not Embed
-```
-<img src="opencv.png" width="400" />
-
 
 ## Example
 
@@ -44,3 +31,5 @@ Unrated
         - [Yolov7 Google Colab](https://colab.research.google.com/drive/1QiTlFsN948Xt2e4WgqUB8DnGgwWwtVZS?usp=sharing)
 - AffineTransform
     - [Perspective transform from quadrilateral to quadrilateral in Swift](https://rethunk.medium.com/perspective-transform-from-quadrilateral-to-quadrilateral-in-swift-5a9adf2175c3)
+- Drawing processing
+    - [Detecting human body poses in an image](https://developer.apple.com/documentation/coreml/model_integration_samples/detecting_human_body_poses_in_an_image)
