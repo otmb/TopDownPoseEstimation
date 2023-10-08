@@ -177,6 +177,9 @@ class KeyPointProcess {
   }
 }
 
+// warpAffine
+// https://stackoverflow.com/questions/49281334/replicate-cvwarpaffine-in-swift-with-core-image
+
 extension UIImage {
   func transformed(by transform: CGAffineTransform, size: CGSize) -> UIImage? {
     UIGraphicsBeginImageContext(size)

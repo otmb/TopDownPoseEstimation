@@ -352,6 +352,3 @@ func cgAffineTransform(from: Triangle, to: Triangle) -> CGAffineTransform? {
   }
   return M.toCGAffineTransform()
 }
-
-// warpAffine
-// https://stackoverflow.com/questions/49281334/replicate-cvwarpaffine-in-swift-with-core-image
