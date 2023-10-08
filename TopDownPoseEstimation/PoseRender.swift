@@ -6,6 +6,11 @@ struct HumanPose {
   var keypoints = [CGPoint]()
   var scores = [Double]()
   var score: Double = 0.0
+  
+  init(keypointsNumber: Int){
+    keypoints = Array(repeating: CGPoint(), count: keypointsNumber)
+    scores = Array(repeating: 0.0, count: keypointsNumber)
+  }
 }
 
 class PoseRender {
@@ -37,9 +42,7 @@ class PoseRender {
     self.sourceImage = sourceImage
     let peopleNum = Int(boxes.count / 4)
     for i in 0..<peopleNum {
-      var pose = HumanPose()
-      pose.keypoints = Array(repeating: CGPoint(), count: keypointsNumber)
-      pose.scores = Array(repeating: 0.0, count: keypointsNumber)
+      var pose = HumanPose(keypointsNumber: keypointsNumber)
       for j in 0..<keypointsNumber {
         let n = i * keypointsNumber * 3 + j * 3
         pose.keypoints[j] = CGPoint(x: keypoints[n], y: keypoints[n + 1])
@@ -60,13 +63,11 @@ class PoseRender {
                                            format: dstImageFormat)
     let dstImage = renderer.image { rendererContext in
       draw(image: sourceImage.cgImage!, in: rendererContext.cgContext)
-      
       for pose in poses {
         for joint in joints {
           drawLine(from: pose.keypoints[joint.0],
                    to: pose.keypoints[joint.1],
                    in: rendererContext.cgContext)
-          
         }
         for keypoint in pose.keypoints {
           draw(circle: keypoint, in: rendererContext.cgContext)
