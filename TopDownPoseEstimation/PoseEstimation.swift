@@ -1,6 +1,7 @@
 import SwiftUI
 import Vision
 import PoseRender
+import Accelerate
 
 extension UIImage {
   func transformed(by transform: CGAffineTransform, size: CGSize) -> UIImage? {
@@ -208,14 +209,16 @@ class PoseEstimation: ObservableObject {
     for j in 0..<dim[1] {
       let idx = batchid * numJoints * dim[2] * dim[3] + j * dim[2] * dim[3]
       let end = idx + dim[2] * dim[3]
-      if let _maxDis = heatmap[idx..<end].max() {
-        let maxDis = heatmap.firstIndex(of: _maxDis) ?? 0
+      var heat = heatmap[idx..<end]
+      let pointer = heat.withUnsafeMutableBufferPointer { $0.baseAddress! }
+      if let _maxDis = UnsafeMutableBufferPointer(start: pointer, count: heat.count).max() {
+        let maxDis = heat.firstIndex(of: _maxDis) ?? 0
         let maxId = Double(idx.distance(to: maxDis))
         
         maxvals[j] = _maxDis
         if (maxDis > 0) {
           coords[j * 2] = maxId.truncatingRemainder(dividingBy: width)
-          coords[j * 2 + 1] = maxId / Double(width)
+          coords[j * 2 + 1] = maxId / width
         }
       }
     }
