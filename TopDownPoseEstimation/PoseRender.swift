@@ -129,6 +129,6 @@ class PoseRender {
     cgContext.setStrokeColor(boxColor.cgColor)
     cgContext.setLineWidth(boxLineWidth)
     cgContext.addRect(box)
-    cgContext.drawPath(using: .stroke)
+    cgContext.strokePath()
   }
 }
