@@ -14,6 +14,18 @@ $ curl -OL https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/vit
 $ curl -OL https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yolov7-tiny_fp16.mlmodel
 ```
 
+### [Create opencv2.xcframework](https://github.com/otmb/TopDownPoseEstimation/blob/main/PoseRender/minimum_opencv.md)
+
+- [opencv_option.txt](https://github.com/otmb/TopDownPoseEstimation/blob/main/PoseRender/opencv_option.txt)
+
+General > Setting > Frameworks, Libraries, and Embedded Content
+```
+Add opencv2.xcframework 
+Do Not Embed
+```
+<img src="opencv.png" width="400" />
+
+
 ## Example
 
 <img src="sample.png" width="500" />
