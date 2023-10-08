@@ -39,7 +39,7 @@ class ObjectDetaction: ObservableObject {
   }
   
   func drawVisionRequestResults(_ results: [Any]) async {
-    var bboxes: [Float32] = []
+    var bboxes: [Double] = []
     let label = "person"
     for observation in results where observation is VNRecognizedObjectObservation {
       guard let objectObservation = observation as? VNRecognizedObjectObservation else {
@@ -56,21 +56,16 @@ class ObjectDetaction: ObservableObject {
       
       if topLabelObservation.identifier == label {
         let minY:CGFloat = height - objectBounds.minY // 画像の下側の値を返すので反転
-        let bbox:[Float32] = [
-          Float32(objectBounds.minX),
-          Float32(minY - objectBounds.height),
-          Float32(objectBounds.width),
-          Float32(objectBounds.height)
+        let bbox:[Double] = [
+          objectBounds.minX,
+          minY - objectBounds.height,
+          objectBounds.width,
+          objectBounds.height
         ]
         bboxes.append(contentsOf: bbox)
       }
     }
-
-    let start = Date()
-    let uiImage = poseEstimation.run(sourceImage: self.originalImage!, boxes: &bboxes)
-    
-    let elapsed = Date().timeIntervalSince(start)
-    print(elapsed)
+    let uiImage = poseEstimation.run(sourceImage: self.originalImage!, boxes: bboxes)
     Task {
       await MainActor.run { [weak self] in
         self!.uiImage = uiImage
