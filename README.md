@@ -16,15 +16,11 @@ $ curl -OL https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yol
 
 ## Example
 
-<img src="sample.png" width="300" />
+<img src="sample.png" width="500" />
 
 ## COCO MS val set
 
 Unrated
-
-## Example
-
-![sample.png](sample.png)
 
 ## References
 - [microsoft/human-pose-estimation.pytorch](https://github.com/microsoft/human-pose-estimation.pytorch)
