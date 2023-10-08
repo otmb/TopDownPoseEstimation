@@ -29,7 +29,7 @@ class PoseEstimation: ObservableObject {
         return NSError(domain: "TopDownPoseEstimation", code: -1, userInfo: [NSLocalizedDescriptionKey: "Model file is missing"])
       }
       let visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL))
-      requests = [VNCoreMLRequest(model: visionModel, completionHandler: handleClassification)]
+      requests = [VNCoreMLRequest(model: visionModel, completionHandler: visionPoseEstimationResults)]
     } catch {
       return NSError(domain: "TopDownPoseEstimation", code: -1, userInfo: [NSLocalizedDescriptionKey: "Model file is missing"])
     }
@@ -61,7 +61,7 @@ class PoseEstimation: ObservableObject {
     }
   }
   
-  func handleClassification(request: VNRequest, error: Error?){
+  func visionPoseEstimationResults(request: VNRequest, error: Error?){
     guard let observations = request.results as? [VNCoreMLFeatureValueObservation] else { fatalError() }
     let mlarray = observations[0].featureValue.multiArrayValue!
     

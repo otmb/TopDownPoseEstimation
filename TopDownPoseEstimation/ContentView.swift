@@ -11,8 +11,8 @@ struct ContentView: View {
           .aspectRatio(contentMode: .fit)
       }
     }
-    .task {
-      await detection.prediction(imageBuffer: uiImage)
+    .onAppear {
+      detection.prediction(imageBuffer: uiImage)
     }
     .padding()
   }

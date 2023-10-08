@@ -23,10 +23,8 @@ class ObjectDetaction: ObservableObject {
     do {
       let visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL))
       let objectRecognition = VNCoreMLRequest(model: visionModel, completionHandler: { (request, error) in
-        Task {
-          if let results = request.results {
-            await self.drawVisionRequestResults(results)
-          }
+        if let results = request.results {
+          self.visionObjectDetectionResults(results)
         }
       })
       objectRecognition.imageCropAndScaleOption = .scaleFit
@@ -38,7 +36,7 @@ class ObjectDetaction: ObservableObject {
     return error
   }
   
-  func drawVisionRequestResults(_ results: [Any]) async {
+  func visionObjectDetectionResults(_ results: [Any]) {
     var bboxes: [Double] = []
     let label = "person"
     for observation in results where observation is VNRecognizedObjectObservation {
@@ -65,15 +63,10 @@ class ObjectDetaction: ObservableObject {
         bboxes.append(contentsOf: bbox)
       }
     }
-    let uiImage = poseEstimation.run(sourceImage: self.originalImage!, boxes: bboxes)
-    Task {
-      await MainActor.run { [weak self] in
-        self!.uiImage = uiImage
-      }
-    }
+    uiImage = poseEstimation.run(sourceImage: self.originalImage!, boxes: bboxes)
   }
   
-  func prediction(imageBuffer: UIImage) async {
+  func prediction(imageBuffer: UIImage) {
     self.originalImage = imageBuffer
     let exifOrientation: CGImagePropertyOrientation = .up
     let imageRequestHandler = VNImageRequestHandler(cgImage: imageBuffer.cgImage!, orientation: exifOrientation, options: [:])
