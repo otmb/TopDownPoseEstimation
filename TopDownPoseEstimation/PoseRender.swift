@@ -36,12 +36,14 @@ class PoseRender {
   ]
   
   var sourceImage: UIImage
+  var boxes: [Double]
   var poses = [HumanPose]()
   
   init(_ sourceImage: UIImage, keypoints: [Double], boxes: [Double], keypointsNumber: Int){
     self.sourceImage = sourceImage
-    let peopleNum = Int(boxes.count / 4)
-    for i in 0..<peopleNum {
+    self.boxes = boxes
+    let personNum = Int(boxes.count / 4)
+    for i in 0..<personNum {
       var pose = HumanPose(keypointsNumber: keypointsNumber)
       for j in 0..<keypointsNumber {
         let n = i * keypointsNumber * 3 + j * 3
@@ -63,6 +65,12 @@ class PoseRender {
                                            format: dstImageFormat)
     let dstImage = renderer.image { rendererContext in
       draw(image: sourceImage.cgImage!, in: rendererContext.cgContext)
+      
+      let personNum = Int(boxes.count / 4)
+      for num in 0..<personNum {
+        let box = CGRect(x: boxes[num*4], y: boxes[num*4+1], width: boxes[num*4+2], height: boxes[num*4+3])
+        draw(rect: box, in: rendererContext.cgContext)
+      }
       for pose in poses {
         for joint in joints {
           drawLine(from: pose.keypoints[joint.0],
@@ -94,6 +102,8 @@ class PoseRender {
   var segmentLineWidth: CGFloat = 2
   var jointColor: UIColor = UIColor.systemPink
   var jointRadius: CGFloat = 4
+  var boxColor: UIColor = UIColor.white
+  var boxLineWidth: CGFloat = 2
   
   func drawLine(from parentJoint: CGPoint,
                 to childJoint: CGPoint,
@@ -113,5 +123,12 @@ class PoseRender {
                            width: jointRadius * 2, height: jointRadius * 2)
     cgContext.addEllipse(in: rectangle)
     cgContext.drawPath(using: .fill)
+  }
+  
+  private func draw(rect box: CGRect, in cgContext: CGContext) {
+    cgContext.setStrokeColor(boxColor.cgColor)
+    cgContext.setLineWidth(boxLineWidth)
+    cgContext.addRect(box)
+    cgContext.drawPath(using: .stroke)
   }
 }

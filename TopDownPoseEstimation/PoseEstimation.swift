@@ -37,8 +37,8 @@ class PoseEstimation: ObservableObject {
   
   func run(sourceImage: UIImage, boxes: [Double]) -> UIImage? {
     keypoints = [Double]()
-    let peopleNum = boxes.count / 4
-    for num in 0..<peopleNum {
+    let personNum = boxes.count / 4
+    for num in 0..<personNum {
       box = CGRect(x: boxes[num*4], y: boxes[num*4+1], width: boxes[num*4+2], height: boxes[num*4+3])
       let uiImage = keypointProcess.preExecute(image: sourceImage, box: box)
       if let uiImage = uiImage {
