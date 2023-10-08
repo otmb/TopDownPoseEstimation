@@ -1,7 +1,6 @@
 import CoreGraphics
 import UIKit
 import Accelerate
-import opencv2
 
 struct HumanPose {
   var keypoints = [CGPoint]()
