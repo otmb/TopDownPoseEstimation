@@ -18,7 +18,7 @@ $ curl -OL https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yol
 
 - [opencv_option.txt](https://github.com/otmb/TopDownPoseEstimation/blob/main/PoseRender/opencv_option.txt)
 
-General > Setting > Frameworks, Libraries, and Embedded Content
+Setting > General > Frameworks, Libraries, and Embedded Content
 ```
 Add opencv2.xcframework 
 Do Not Embed
