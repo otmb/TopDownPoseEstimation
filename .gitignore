@@ -1,0 +1,12 @@
+## User settings
+xcuserdata/
+
+## Xcode 8 and earlier
+*.xcscmblueprint
+*.xccheckout
+
+## Project
+*.mlmodel
+*.xcframework
+
+.DS_Store

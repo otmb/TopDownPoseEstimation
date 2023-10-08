@@ -1,0 +1,18 @@
+--without video --without videoio --without videostab \
+--without features2d --without objdetect --without flann --without ml \
+--without cudaarithm --without cudabgsegm --without cudacodec --without cudafeatures2d  \
+--without cudafilters --without cudaimgproc --without cudalegacy --without cudaobjdetect  \
+--without cudaoptflow --without cudastereo --without cudawarping --without cudev \
+--without highgui --without viz --without superres --without photo \
+--without calib3d --without shape --without stitching \
+--without dnn --without aruco \
+--without bgsegm --without bioinspired --without ccalib \
+--without cnn_3dobj --without cvv --without datasets \
+--without dnn_modern --without dpm --without face \
+--without freetype --without fuzzy --without hdf --without img_hash \
+--without line_descriptor --without matlab --without optflow --without phase_unwrapping \
+--without plot --without reg --without rgbd --without saliency --without sfm --without stereo \
+--without structured_light --without surface_matching --without text --without tracking \
+--without xfeatures2d --without ximgproc --without xobjdetect --without xphoto \
+--without gapi \
+--without world \
