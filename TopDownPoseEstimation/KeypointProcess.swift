@@ -1,7 +1,6 @@
 import SwiftUI
 import Vision
 import PoseRender
-import Accelerate
 
 class KeyPointProcess {
   var modelWidth: Int
