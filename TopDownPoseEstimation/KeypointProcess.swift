@@ -1,6 +1,5 @@
 import SwiftUI
 import Vision
-import PoseRender
 
 class KeyPointProcess {
   var modelWidth: Int
