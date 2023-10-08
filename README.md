@@ -21,6 +21,22 @@ $ curl -OL https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yol
 
 Unrated
 
+## Sample Models
+
+| Models | Size |
+|--|--|
+| [vitpose_s256x192_wholebody_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.6/vitpose_s256x192_wholebody_fp16.mlmodel)| 46.5MB |
+| [vitpose_b256x192_wholebody_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/vitpose_b256x192_wholebody_fp16.mlmodel) | 172MB |
+| [yolov7-tiny_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yolov7-tiny_fp16.mlmodel) | 12.1MB |
+
+## Create Model References
+
+- ViTPose to CoreML
+    - [mbotsu/20221128_convert.ipynb](https://gist.github.com/mbotsu/3de024c36582f21306e23473e9975841)
+- Yolov7 to CoreML
+    - [john-rocky/CoreML-Models](https://github.com/john-rocky/CoreML-Models#yolov7) 
+        - [Yolov7 Google Colab](https://colab.research.google.com/drive/1QiTlFsN948Xt2e4WgqUB8DnGgwWwtVZS?usp=sharing)
+
 ## References
 - [microsoft/human-pose-estimation.pytorch](https://github.com/microsoft/human-pose-estimation.pytorch)
 - [PaddlePaddle/PaddleDetection](https://github.com/PaddlePaddle/PaddleDetection/blob/develop/deploy/lite/src/keypoint_postprocess.cc)
