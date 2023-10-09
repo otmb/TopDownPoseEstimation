@@ -36,7 +36,7 @@ class KeyPointProcess {
     var preds: [Double] = Array(repeating: 0.0, count: keypointsNumber * 3)
     
     getMaxCoords(heatmap: heatmap, dim: &dim, coords: &coords,
-                 maxvals: &maxvals, batchid: 0)
+                 maxvals: &maxvals)
     
     for j in 0..<dim[1] {
       let index = j * dim[2] * dim[3]
@@ -129,23 +129,19 @@ class KeyPointProcess {
   }
   
   func getMaxCoords(heatmap: [Double], dim: inout [Int], coords: inout [Double],
-                    maxvals: inout [Double], batchid: Int) {
-    let numJoints = dim[1]
+                    maxvals: inout [Double]) {
     let width = Double(dim[3])
     
     for j in 0..<dim[1] {
-      let idx = batchid * numJoints * dim[2] * dim[3] + j * dim[2] * dim[3]
+      let idx = j * dim[2] * dim[3]
       let end = idx + dim[2] * dim[3]
-      var heat = heatmap[idx..<end]
-      let pointer = heat.withUnsafeMutableBufferPointer { $0.baseAddress! }
-      if let _maxDis = UnsafeMutableBufferPointer(start: pointer, count: heat.count).max() {
-        let maxDis = heat.firstIndex(of: _maxDis) ?? 0
-        let maxId = Double(idx.distance(to: maxDis))
-        
-        maxvals[j] = _maxDis
-        if (maxDis > 0) {
-          coords[j * 2] = maxId.truncatingRemainder(dividingBy: width)
-          coords[j * 2 + 1] = maxId / width
+      var slice = heatmap[idx..<end]
+      let pointer = slice.withUnsafeMutableBufferPointer{ $0 }
+      if let maxDis = pointer.max() {
+        maxvals[j] = maxDis
+        if let maxId = pointer.firstIndex(of: maxDis) {
+          coords[j * 2] = Double(maxId).truncatingRemainder(dividingBy: width)
+          coords[j * 2 + 1] = Double(maxId) / width
         }
       }
     }
