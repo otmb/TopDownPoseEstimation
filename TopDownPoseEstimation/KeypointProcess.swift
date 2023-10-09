@@ -21,9 +21,8 @@ class KeyPointProcess {
     let (center, scale) = box2cs(box: box)
     let _scale = CGPoint(x: scale.x * pixelStd, y: scale.y * pixelStd)
     let outputSize = CGSize(width: modelWidth, height: modelHeight)
-    let trans = getAffineTransform(center: center, scale: _scale,
-                                   rot: 0, outputSize: outputSize, inv: 0)
-    if let trans = trans {
+    if let trans = getAffineTransform(center: center, scale: _scale,
+                                      rot: 0, outputSize: outputSize, inv: 0) {
       return image.transformed(by: trans, size: outputSize)
     }
     return nil
