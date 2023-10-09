@@ -23,11 +23,18 @@ Unrated
 
 ## Sample Models
 
-| Models | Size |
-|--|--|
-| [vitpose_s256x192_wholebody_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.6/vitpose_s256x192_wholebody_fp16.mlmodel)| 46.5MB |
-| [vitpose_b256x192_wholebody_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/vitpose_b256x192_wholebody_fp16.mlmodel) | 172MB |
-| [yolov7-tiny_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yolov7-tiny_fp16.mlmodel) | 12.1MB |
+| Models | Size | Keypoint | 
+|--|--|:--:|
+| [vitpose-b256x192_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/vitpose-b256x192_fp16.mlmodel) | 172MB | 17 |
+| [vitpose_s256x192_wholebody_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.6/vitpose_s256x192_wholebody_fp16.mlmodel)| 46.5MB | 133 |
+| [vitpose_b256x192_wholebody_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/vitpose_b256x192_wholebody_fp16.mlmodel) | 172MB | 133 |
+| [yolov7-tiny_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yolov7-tiny_fp16.mlmodel) | 12.1MB | - |
+
+Wholebody 133 When using Keypoint, change the following after introducing the model to the project.
+
+Edit: PoseEstimation.swift 
+- keypointsNumber
+- modelURL
 
 ## Create Model References
 
