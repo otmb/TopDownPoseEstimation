@@ -1,6 +1,5 @@
 import SwiftUI
 import Vision
-import Accelerate
 
 class KeyPointProcess {
   var modelWidth: Int
@@ -30,44 +29,37 @@ class KeyPointProcess {
     return nil
   }
   
-  func postExecute(heatmap: [Double], box: CGRect) -> HumanPose {
+  func postExecute(heatmap: [Double], box: CGRect) -> HumanPose? {
     let (center, scale) = box2cs(box: box)
     let heatmapSize = CGSize(width: heatmapWidth, height: heatmapHeight)
-    var coords: [Double] = Array(repeating: 0.0, count: keypointsNumber * 2)
+    var coords = Array(repeating: CGPoint(), count: keypointsNumber)
     var maxvals: [Double] = Array(repeating: 0.0, count: keypointsNumber)
-    var preds: [Double] = Array(repeating: 0.0, count: keypointsNumber * 3)
     
     getMaxCoords(heatmap: heatmap, coords: &coords, maxvals: &maxvals)
     
     for j in 0..<keypointsNumber {
       let index = j * heatmapHeight * heatmapWidth
-      let px = Int(coords[j * 2] + 0.5)
-      let py = Int(coords[j * 2 + 1] + 0.5)
+      let px = Int(coords[j].x + 0.5)
+      let py = Int(coords[j].y + 0.5)
       
       if (px > 0 && px < heatmapWidth - 1) {
         let diff_x = heatmap[index + py * heatmapWidth + px + 1] -
         heatmap[index + py * heatmapWidth + px - 1]
-        coords[j * 2] += sign(diff_x) * 0.25
+        coords[j].x += sign(diff_x) * 0.25
       }
       if (py > 0 && py < heatmapHeight - 1) {
         let diff_y = heatmap[index + (py + 1) * heatmapWidth + px] -
         heatmap[index + (py - 1) * heatmapWidth + px]
-        coords[j * 2+1] += sign(diff_y) * 0.25
+        coords[j].y += sign(diff_y) * 0.25
       }
     }
     
     let _scale = CGPoint(x: scale.x * pixelStd, y: scale.y * pixelStd)
+    guard let preds = transformPreds(coords: coords,
+                                     center: center, scale: _scale,
+                                     outputSize: heatmapSize) else { return nil }
     
-    transformPreds(coords: coords, center: center, scale: _scale,
-                   outputSize: heatmapSize, targetCoords: &preds)
-    
-    var pose = HumanPose(keypointsNumber: keypointsNumber)
-    for j in 0..<keypointsNumber {
-      pose.keypoints[j] = CGPoint(x: preds[j * 3 + 1], y: preds[j * 3 + 2])
-      pose.scores[j] = maxvals[j]
-    }
-    pose.score = vDSP.mean(pose.scores)
-    return pose
+    return HumanPose(keypoints: preds, scores: maxvals, box: box)
   }
   
   func get3rdPoint(_ a: CGPoint,_ b: CGPoint) -> CGPoint {
@@ -129,7 +121,7 @@ class KeyPointProcess {
     return (center, scale)
   }
   
-  func getMaxCoords(heatmap: [Double], coords: inout [Double],
+  func getMaxCoords(heatmap: [Double], coords: inout [CGPoint],
                     maxvals: inout [Double]) {
     let width = Double(heatmapWidth)
     
@@ -141,36 +133,34 @@ class KeyPointProcess {
       if let maxValue = pointer.max() {
         maxvals[j] = maxValue
         if let maxId = pointer.firstIndex(of: maxValue) {
-          coords[j * 2] = Double(maxId).truncatingRemainder(dividingBy: width)
-          coords[j * 2 + 1] = Double(maxId) / width
+          coords[j].x = Double(maxId).truncatingRemainder(dividingBy: width)
+          coords[j].y = Double(maxId) / width
         }
       }
     }
   }
   
-  func transformPreds(coords: [Double], center: CGPoint,
-                      scale: CGPoint, outputSize: CGSize,
-                      targetCoords: inout [Double]){
+  func transformPreds(coords: [CGPoint], center: CGPoint,
+                      scale: CGPoint, outputSize: CGSize) -> [CGPoint]? {
     
-    let trans = getAffineTransform(center: center, scale: scale,
-                                   rot: 0, outputSize: outputSize, inv: 1)
-    if let t = trans {
-      let trans = double2x3(
-        simd_double3(t.a, t.b, t.tx),
-        simd_double3(t.c, t.d, t.ty)
-      )
-      for p in 0..<keypointsNumber {
-        affineTransform(point: CGPoint(x: coords[p * 2], y: coords[p * 2 + 1]),
-                        trans: trans, preds: &targetCoords, p: p)
-      }
+    guard let t = getAffineTransform(center: center, scale: scale,
+                                     rot: 0, outputSize: outputSize, inv: 1) else {
+      return nil
+    }
+    
+    let trans = double2x3(
+      simd_double3(t.a, t.b, t.tx),
+      simd_double3(t.c, t.d, t.ty)
+    )
+    return coords.map {
+      affineTransform(point: $0, trans: trans)
     }
   }
   
-  func affineTransform(point: CGPoint, trans: double2x3, preds: inout [Double], p: Int){
+  func affineTransform(point: CGPoint, trans: double2x3) -> CGPoint {
     let pt = simd_double3(point.x, point.y, 1.0)
     let w:simd_double2 = simd_mul(pt, trans)
-    preds[p * 3 + 1] = w.x
-    preds[p * 3 + 2] = w.y
+    return CGPoint(x: w.x, y: w.y)
   }
 }
 

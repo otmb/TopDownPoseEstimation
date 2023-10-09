@@ -40,12 +40,11 @@ class PoseEstimation: ObservableObject {
     let personNum = boxes.count / 4
     for num in 0..<personNum {
       box = CGRect(x: boxes[num*4], y: boxes[num*4+1], width: boxes[num*4+2], height: boxes[num*4+3])
-      let uiImage = keypointProcess.preExecute(image: sourceImage, box: box)
-      if let uiImage = uiImage {
+      if let uiImage = keypointProcess.preExecute(image: sourceImage, box: box){
         runCoreML(uiImage: uiImage)
       }
     }
-    let render = PoseRender(sourceImage, poses: poses, boxes: boxes)
+    let render = PoseRender(sourceImage, poses: poses)
     return render.render()
   }
   
@@ -67,7 +66,8 @@ class PoseEstimation: ObservableObject {
     let floatPtr =  mlarray.dataPointer.bindMemory(to: Float32.self, capacity: length)
     let floatBuffer = UnsafeBufferPointer(start: floatPtr, count: length)
     
-    let pose = keypointProcess.postExecute(heatmap: floatBuffer.map{ Double($0) }, box: box )
-    poses.append(pose)
+    if let pose = keypointProcess.postExecute(heatmap: floatBuffer.map{ Double($0) }, box: box ){
+      poses.append(pose)
+    }
   }
 }

@@ -6,10 +6,13 @@ struct HumanPose {
   var keypoints = [CGPoint]()
   var scores = [Double]()
   var score: Double = 0.0
+  var box: CGRect
   
-  init(keypointsNumber: Int){
-    keypoints = Array(repeating: CGPoint(), count: keypointsNumber)
-    scores = Array(repeating: 0.0, count: keypointsNumber)
+  init(keypoints: [CGPoint], scores: [Double], box: CGRect){
+    self.keypoints = keypoints
+    self.scores = scores
+    self.score = vDSP.mean(scores)
+    self.box = box
   }
 }
 
@@ -43,13 +46,11 @@ class PoseRender {
   var boxLineWidth: CGFloat = 2
   
   var sourceImage: UIImage
-  var boxes: [Double]
   var poses: [HumanPose]
   
-  init(_ sourceImage: UIImage, poses: [HumanPose], boxes: [Double]){
+  init(_ sourceImage: UIImage, poses: [HumanPose]){
     self.sourceImage = sourceImage
     self.poses = poses
-    self.boxes = boxes
   }
   
   func render() -> UIImage {
@@ -63,12 +64,9 @@ class PoseRender {
     let dstImage = renderer.image { rendererContext in
       draw(image: sourceImage.cgImage!, in: rendererContext.cgContext)
       
-      let personNum = Int(boxes.count / 4)
-      for num in 0..<personNum {
-        let box = CGRect(x: boxes[num*4], y: boxes[num*4+1], width: boxes[num*4+2], height: boxes[num*4+3])
-        draw(rect: box, in: rendererContext.cgContext)
-      }
       for pose in poses {
+        draw(rect: pose.box, in: rendererContext.cgContext)
+        
         for joint in joints {
           drawLine(from: pose.keypoints[joint.0],
                    to: pose.keypoints[joint.1],
