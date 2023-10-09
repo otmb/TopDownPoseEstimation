@@ -5,12 +5,16 @@ import Accelerate
 class KeyPointProcess {
   var modelWidth: Int
   var modelHeight: Int
+  var heatmapHeight: Int
+  var heatmapWidth: Int
   var keypointsNumber: Int
   let pixelStd = 200.0
   
   init(modelWidth: Int, modelHeight: Int, keypointsNumber: Int = 17){
     self.modelWidth = modelWidth
     self.modelHeight = modelHeight
+    self.heatmapWidth = Int(modelWidth / 4)
+    self.heatmapHeight = Int(modelHeight / 4)
     self.keypointsNumber = keypointsNumber
   }
   
@@ -28,30 +32,26 @@ class KeyPointProcess {
   
   func postExecute(heatmap: [Double], box: CGRect) -> HumanPose {
     let (center, scale) = box2cs(box: box)
-    let heatmapHeight = modelHeight / 4
-    let heatmapWidth = modelWidth / 4
-    var dim: [Int] = [ 1, keypointsNumber, heatmapHeight, heatmapWidth ]
-    let imgSize = CGSize(width: heatmapWidth, height: heatmapHeight)
+    let heatmapSize = CGSize(width: heatmapWidth, height: heatmapHeight)
     var coords: [Double] = Array(repeating: 0.0, count: keypointsNumber * 2)
     var maxvals: [Double] = Array(repeating: 0.0, count: keypointsNumber)
     var preds: [Double] = Array(repeating: 0.0, count: keypointsNumber * 3)
     
-    getMaxCoords(heatmap: heatmap, dim: &dim, coords: &coords,
-                 maxvals: &maxvals)
+    getMaxCoords(heatmap: heatmap, coords: &coords, maxvals: &maxvals)
     
-    for j in 0..<dim[1] {
-      let index = j * dim[2] * dim[3]
+    for j in 0..<keypointsNumber {
+      let index = j * heatmapHeight * heatmapWidth
       let px = Int(coords[j * 2] + 0.5)
       let py = Int(coords[j * 2 + 1] + 0.5)
       
       if (px > 0 && px < heatmapWidth - 1) {
-        let diff_x = heatmap[index + py * dim[3] + px + 1] -
-        heatmap[index + py * dim[3] + px - 1]
+        let diff_x = heatmap[index + py * heatmapWidth + px + 1] -
+        heatmap[index + py * heatmapWidth + px - 1]
         coords[j * 2] += sign(diff_x) * 0.25
       }
       if (py > 0 && py < heatmapHeight - 1) {
-        let diff_y = heatmap[index + (py + 1) * dim[3] + px] -
-        heatmap[index + (py - 1) * dim[3] + px]
+        let diff_y = heatmap[index + (py + 1) * heatmapWidth + px] -
+        heatmap[index + (py - 1) * heatmapWidth + px]
         coords[j * 2+1] += sign(diff_y) * 0.25
       }
     }
@@ -59,7 +59,7 @@ class KeyPointProcess {
     let _scale = CGPoint(x: scale.x * pixelStd, y: scale.y * pixelStd)
     
     transformPreds(coords: coords, center: center, scale: _scale,
-                   outputSize: imgSize, dim: dim, targetCoords: &preds)
+                   outputSize: heatmapSize, targetCoords: &preds)
     
     var pose = HumanPose(keypointsNumber: keypointsNumber)
     for j in 0..<keypointsNumber {
@@ -75,7 +75,8 @@ class KeyPointProcess {
     return CGPoint(x: a.x - direct.y, y: a.y + direct.x)
   }
   
-  func getAffineTransform(center: CGPoint, scale: CGPoint, rot: Double, outputSize: CGSize, inv: Int) -> CGAffineTransform? {
+  func getAffineTransform(center: CGPoint, scale: CGPoint, rot: Double,
+                          outputSize: CGSize, inv: Int) -> CGAffineTransform? {
     
     let src_w = scale.x
     let dst_w = Double(outputSize.width)
@@ -128,13 +129,13 @@ class KeyPointProcess {
     return (center, scale)
   }
   
-  func getMaxCoords(heatmap: [Double], dim: inout [Int], coords: inout [Double],
+  func getMaxCoords(heatmap: [Double], coords: inout [Double],
                     maxvals: inout [Double]) {
-    let width = Double(dim[3])
+    let width = Double(heatmapWidth)
     
-    for j in 0..<dim[1] {
-      let idx = j * dim[2] * dim[3]
-      let end = idx + dim[2] * dim[3]
+    for j in 0..<keypointsNumber {
+      let idx = j * heatmapHeight * heatmapWidth
+      let end = idx + heatmapHeight * heatmapWidth
       var slice = heatmap[idx..<end]
       let pointer = slice.withUnsafeMutableBufferPointer{ $0 }
       if let maxValue = pointer.max() {
@@ -149,7 +150,7 @@ class KeyPointProcess {
   
   func transformPreds(coords: [Double], center: CGPoint,
                       scale: CGPoint, outputSize: CGSize,
-                      dim: [Int], targetCoords: inout [Double]){
+                      targetCoords: inout [Double]){
     
     let trans = getAffineTransform(center: center, scale: scale,
                                    rot: 0, outputSize: outputSize, inv: 1)
@@ -158,7 +159,7 @@ class KeyPointProcess {
         simd_double3(t.a, t.b, t.tx),
         simd_double3(t.c, t.d, t.ty)
       )
-      for p in 0..<dim[1] {
+      for p in 0..<keypointsNumber {
         affineTransform(point: CGPoint(x: coords[p * 2], y: coords[p * 2 + 1]),
                         trans: trans, preds: &targetCoords, p: p)
       }
