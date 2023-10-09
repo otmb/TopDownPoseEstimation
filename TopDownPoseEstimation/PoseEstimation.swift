@@ -4,7 +4,7 @@ import Vision
 class PoseEstimation: ObservableObject {
   
   @Published var uiImage: UIImage?
-  var keypoints = [Double]()
+  var poses = [HumanPose]()
   let modelWidth = 192
   let modelHeight = 256
   let keypointsNumber = 17
@@ -36,7 +36,7 @@ class PoseEstimation: ObservableObject {
   }
   
   func run(sourceImage: UIImage, boxes: [Double]) -> UIImage? {
-    keypoints = [Double]()
+    poses = [HumanPose]()
     let personNum = boxes.count / 4
     for num in 0..<personNum {
       box = CGRect(x: boxes[num*4], y: boxes[num*4+1], width: boxes[num*4+2], height: boxes[num*4+3])
@@ -45,7 +45,7 @@ class PoseEstimation: ObservableObject {
         runCoreML(uiImage: uiImage)
       }
     }
-    let render = PoseRender(sourceImage, keypoints: keypoints, boxes: boxes, keypointsNumber: keypointsNumber)
+    let render = PoseRender(sourceImage, poses: poses, boxes: boxes)
     return render.render()
   }
   
@@ -67,7 +67,7 @@ class PoseEstimation: ObservableObject {
     let floatPtr =  mlarray.dataPointer.bindMemory(to: Float32.self, capacity: length)
     let floatBuffer = UnsafeBufferPointer(start: floatPtr, count: length)
     
-    let results = keypointProcess.postExecute(heatmap: floatBuffer.map{ Double($0) }, box: box )
-    keypoints.append(contentsOf: results)
+    let pose = keypointProcess.postExecute(heatmap: floatBuffer.map{ Double($0) }, box: box )
+    poses.append(pose)
   }
 }

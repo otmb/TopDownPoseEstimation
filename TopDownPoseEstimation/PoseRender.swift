@@ -37,22 +37,12 @@ class PoseRender {
   
   var sourceImage: UIImage
   var boxes: [Double]
-  var poses = [HumanPose]()
+  var poses: [HumanPose]
   
-  init(_ sourceImage: UIImage, keypoints: [Double], boxes: [Double], keypointsNumber: Int){
+  init(_ sourceImage: UIImage, poses: [HumanPose], boxes: [Double]){
     self.sourceImage = sourceImage
+    self.poses = poses
     self.boxes = boxes
-    let personNum = Int(boxes.count / 4)
-    for i in 0..<personNum {
-      var pose = HumanPose(keypointsNumber: keypointsNumber)
-      for j in 0..<keypointsNumber {
-        let n = i * keypointsNumber * 3 + j * 3
-        pose.keypoints[j] = CGPoint(x: keypoints[n], y: keypoints[n + 1])
-        pose.scores[j] = keypoints[n + 2]
-      }
-      pose.score = vDSP.mean(pose.scores)
-      poses.append(pose)
-    }
   }
   
   func render() -> UIImage {

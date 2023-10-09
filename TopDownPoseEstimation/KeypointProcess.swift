@@ -1,5 +1,6 @@
 import SwiftUI
 import Vision
+import Accelerate
 
 class KeyPointProcess {
   var modelWidth: Int
@@ -25,7 +26,7 @@ class KeyPointProcess {
     return nil
   }
   
-  func postExecute(heatmap: [Double], box: CGRect) -> [Double]{
+  func postExecute(heatmap: [Double], box: CGRect) -> HumanPose {
     let (center, scale) = box2cs(box: box)
     let heatmapHeight = modelHeight / 4
     let heatmapWidth = modelWidth / 4
@@ -60,14 +61,13 @@ class KeyPointProcess {
     transformPreds(coords: coords, center: center, scale: _scale,
                    outputSize: imgSize, dim: dim, targetCoords: &preds)
     
-    var results = Array(repeating: 0.0, count: keypointsNumber * 3)
-    
-    for j in 0..<dim[1] {
-      results[j * 3] = preds[j * 3 + 1]
-      results[j * 3 + 1] = preds[j * 3 + 2]
-      results[j * 3 + 2] = maxvals[j]
+    var pose = HumanPose(keypointsNumber: keypointsNumber)
+    for j in 0..<keypointsNumber {
+      pose.keypoints[j] = CGPoint(x: preds[j * 3 + 1], y: preds[j * 3 + 2])
+      pose.scores[j] = maxvals[j]
     }
-    return results
+    pose.score = vDSP.mean(pose.scores)
+    return pose
   }
   
   func get3rdPoint(_ a: CGPoint,_ b: CGPoint) -> CGPoint {
