@@ -30,7 +30,7 @@ Unrated
 | [vitpose_b256x192_wholebody_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/vitpose_b256x192_wholebody_fp16.mlmodel) | 172MB | 133 |
 | [yolov7-tiny_fp16.mlmodel](https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yolov7-tiny_fp16.mlmodel) | 12.1MB | - |
 
-Wholebody 133 When using Keypoint, change the following after introducing the model to the project.
+[COCO-Wholebody](https://github.com/jin-s13/COCO-WholeBody) 133 When using Keypoint, change the following after introducing the model to the project.
 
 Edit: PoseEstimation.swift 
 - keypointsNumber
