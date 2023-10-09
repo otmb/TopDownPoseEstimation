@@ -137,9 +137,9 @@ class KeyPointProcess {
       let end = idx + dim[2] * dim[3]
       var slice = heatmap[idx..<end]
       let pointer = slice.withUnsafeMutableBufferPointer{ $0 }
-      if let maxDis = pointer.max() {
-        maxvals[j] = maxDis
-        if let maxId = pointer.firstIndex(of: maxDis) {
+      if let maxValue = pointer.max() {
+        maxvals[j] = maxValue
+        if let maxId = pointer.firstIndex(of: maxValue) {
           coords[j * 2] = Double(maxId).truncatingRemainder(dividingBy: width)
           coords[j * 2 + 1] = Double(maxId) / width
         }
