@@ -35,6 +35,13 @@ class PoseRender {
     (6, 12),
   ]
   
+  let segmentColor: UIColor = UIColor.systemTeal
+  var segmentLineWidth: CGFloat = 2
+  var jointColor: UIColor = UIColor.systemPink
+  var jointRadius: CGFloat = 4
+  var boxColor: UIColor = UIColor.white
+  var boxLineWidth: CGFloat = 2
+  
   var sourceImage: UIImage
   var boxes: [Double]
   var poses: [HumanPose]
@@ -87,13 +94,6 @@ class PoseRender {
     cgContext.draw(image, in: drawingRect)
     cgContext.restoreGState()
   }
-  
-  let segmentColor: UIColor = UIColor.systemTeal
-  var segmentLineWidth: CGFloat = 2
-  var jointColor: UIColor = UIColor.systemPink
-  var jointRadius: CGFloat = 4
-  var boxColor: UIColor = UIColor.white
-  var boxLineWidth: CGFloat = 2
   
   func drawLine(from parentJoint: CGPoint,
                 to childJoint: CGPoint,
