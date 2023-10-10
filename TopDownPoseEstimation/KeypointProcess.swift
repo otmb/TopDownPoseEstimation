@@ -1,5 +1,6 @@
 import SwiftUI
 import Vision
+import Accelerate
 
 class KeyPointProcess {
   var modelWidth: Int
@@ -41,14 +42,12 @@ class KeyPointProcess {
       let py = Int(coord.y + 0.5)
       
       if (px > 0 && px < heatmapWidth - 1) {
-        let diff_x = heatmap[index + py * heatmapWidth + px + 1] -
-        heatmap[index + py * heatmapWidth + px - 1]
-        coord.x += sign(diff_x) * 0.25
+        coord.x += sign(heatmap[index + py * heatmapWidth + px + 1] -
+                        heatmap[index + py * heatmapWidth + px - 1]) * 0.25
       }
       if (py > 0 && py < heatmapHeight - 1) {
-        let diff_y = heatmap[index + (py + 1) * heatmapWidth + px] -
-        heatmap[index + (py - 1) * heatmapWidth + px]
-        coord.y += sign(diff_y) * 0.25
+        coord.y += sign(heatmap[index + (py + 1) * heatmapWidth + px] -
+                        heatmap[index + (py - 1) * heatmapWidth + px]) * 0.25
       }
       return coord
     }
@@ -131,17 +130,11 @@ class KeyPointProcess {
     return (0..<keypointsNumber).map { j in
       let idx = j * heatmapHeight * heatmapWidth
       let end = idx + heatmapHeight * heatmapWidth
-      var slice = heatmap[idx..<end]
-      let pointer = slice.withUnsafeMutableBufferPointer{ $0 }
-      if let maxValue = pointer.max() {
-        if let maxId = pointer.firstIndex(of: maxValue) {
-          let coord = CGPoint(
-                        x: Double(maxId).truncatingRemainder(dividingBy: width),
-                        y: Double(maxId) / width)
-          return MaxCoord(coord: coord, maxval: maxValue)
-        }
-      }
-      return MaxCoord()
+      let (maxIdx, maxValue) = vDSP.indexOfMaximum(heatmap[idx..<end])
+      let coord = CGPoint(
+        x: Double(maxIdx).truncatingRemainder(dividingBy: width),
+        y: Double(maxIdx) / width)
+      return MaxCoord(coord: coord, maxval: maxValue)
     }
   }
   
