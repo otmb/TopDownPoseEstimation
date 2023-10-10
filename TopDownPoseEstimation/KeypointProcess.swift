@@ -31,26 +31,26 @@ class KeyPointProcess {
   func postExecute(heatmap: [Double], box: CGRect) -> HumanPose? {
     let (center, scale) = box2cs(box: box)
     let heatmapSize = CGSize(width: heatmapWidth, height: heatmapHeight)
-    var coords = Array(repeating: CGPoint(), count: keypointsNumber)
-    var maxvals: [Double] = Array(repeating: 0.0, count: keypointsNumber)
     
-    getMaxCoords(heatmap: heatmap, coords: &coords, maxvals: &maxvals)
-    
-    for j in 0..<keypointsNumber {
+    let maxCoords = getMaxCoords(heatmap: heatmap)
+    let maxvals = maxCoords.map { $0.maxval }
+    let coords = maxCoords.enumerated().map { (j, maxCoord) in
+      var coord = maxCoord.coord
       let index = j * heatmapHeight * heatmapWidth
-      let px = Int(coords[j].x + 0.5)
-      let py = Int(coords[j].y + 0.5)
+      let px = Int(coord.x + 0.5)
+      let py = Int(coord.y + 0.5)
       
       if (px > 0 && px < heatmapWidth - 1) {
         let diff_x = heatmap[index + py * heatmapWidth + px + 1] -
         heatmap[index + py * heatmapWidth + px - 1]
-        coords[j].x += sign(diff_x) * 0.25
+        coord.x += sign(diff_x) * 0.25
       }
       if (py > 0 && py < heatmapHeight - 1) {
         let diff_y = heatmap[index + (py + 1) * heatmapWidth + px] -
         heatmap[index + (py - 1) * heatmapWidth + px]
-        coords[j].y += sign(diff_y) * 0.25
+        coord.y += sign(diff_y) * 0.25
       }
+      return coord
     }
     
     let _scale = CGPoint(x: scale.x * pixelStd, y: scale.y * pixelStd)
@@ -120,22 +120,28 @@ class KeyPointProcess {
     return (center, scale)
   }
   
-  func getMaxCoords(heatmap: [Double], coords: inout [CGPoint],
-                    maxvals: inout [Double]) {
+  struct MaxCoord {
+    var coord = CGPoint()
+    var maxval = 0.0
+  }
+  
+  func getMaxCoords(heatmap: [Double]) -> [MaxCoord] {
     let width = Double(heatmapWidth)
     
-    for j in 0..<keypointsNumber {
+    return (0..<keypointsNumber).map { j in
       let idx = j * heatmapHeight * heatmapWidth
       let end = idx + heatmapHeight * heatmapWidth
       var slice = heatmap[idx..<end]
       let pointer = slice.withUnsafeMutableBufferPointer{ $0 }
       if let maxValue = pointer.max() {
-        maxvals[j] = maxValue
         if let maxId = pointer.firstIndex(of: maxValue) {
-          coords[j].x = Double(maxId).truncatingRemainder(dividingBy: width)
-          coords[j].y = Double(maxId) / width
+          let coord = CGPoint(
+                        x: Double(maxId).truncatingRemainder(dividingBy: width),
+                        y: Double(maxId) / width)
+          return MaxCoord(coord: coord, maxval: maxValue)
         }
       }
+      return MaxCoord()
     }
   }
   
