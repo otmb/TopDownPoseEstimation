@@ -34,7 +34,7 @@ Unrated
 
 Edit: PoseEstimation.swift 
 - keypointsNumber
-- modelURL
+- modelName
 
 ## Create Model References
 

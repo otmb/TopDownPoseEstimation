@@ -2,10 +2,10 @@ import SwiftUI
 import Vision
 
 class ObjectDetaction: ObservableObject {
-  @Published var uiImage: UIImage?
+  let modelName = "yolov7-tiny_fp16"
   private var requests = [VNRequest]()
   var originalImage: UIImage? = nil
-  var poseEstimation = PoseEstimation()
+  var bboxes = [Double]()
   
   init(){
     if let error = setupVision(){
@@ -17,18 +17,14 @@ class ObjectDetaction: ObservableObject {
   func setupVision() -> NSError? {
     // Setup Vision parts
     let error: NSError! = nil
-    guard let modelURL = Bundle.main.url(forResource: "yolov7-tiny_fp16", withExtension: "mlmodelc") else {
+    guard let modelURL = Bundle.main.url(forResource: modelName, withExtension: "mlmodelc") else {
       return NSError(domain: "TopDownPoseEstimation", code: -1, userInfo: [NSLocalizedDescriptionKey: "Model file is missing"])
     }
     do {
       let visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL))
-      let objectRecognition = VNCoreMLRequest(model: visionModel, completionHandler: { (request, error) in
-        if let results = request.results {
-          self.visionObjectDetectionResults(results)
-        }
-      })
-      objectRecognition.imageCropAndScaleOption = .scaleFit
-      self.requests = [objectRecognition]
+      let request = VNCoreMLRequest(model: visionModel, completionHandler: visionObjectDetectionResults)
+      request.imageCropAndScaleOption = .scaleFit
+      requests = [request]
     } catch let error as NSError {
       print("Model loading went wrong: \(error)")
     }
@@ -36,21 +32,26 @@ class ObjectDetaction: ObservableObject {
     return error
   }
   
-  func visionObjectDetectionResults(_ results: [Any]) {
-    var bboxes: [Double] = []
+  func runCoreML(uiImage: UIImage, orientation: CGImagePropertyOrientation) throws {
+    let cgiImage = uiImage.cgImage!
+    let classifierRequestHandler = VNImageRequestHandler(cgImage: cgiImage, 
+                                                         orientation: orientation, options: [:])
+    try classifierRequestHandler.perform(requests)
+  }
+  
+  func visionObjectDetectionResults(request: VNRequest, error: Error?) {
+    bboxes = []
+    guard let observations = request.results as? [VNRecognizedObjectObservation] else { fatalError() }
     let label = "person"
-    for observation in results where observation is VNRecognizedObjectObservation {
-      guard let objectObservation = observation as? VNRecognizedObjectObservation else {
-        continue
-      }
+    guard let uiImage = originalImage else { return }
+    
+    for observation in observations {
+      let width = uiImage.size.width
+      let height = uiImage.size.height
       
-      let width = self.originalImage!.size.width
-      let height = self.originalImage!.size.height
-      
-      // Select only the label with the highest confidence.
-      let topLabelObservation = objectObservation.labels[0]
+      let topLabelObservation = observation.labels[0]
       let bufferSize = CGSize(width: width, height: height)
-      let objectBounds = VNImageRectForNormalizedRect(objectObservation.boundingBox, Int(bufferSize.width), Int(bufferSize.height))
+      let objectBounds = VNImageRectForNormalizedRect(observation.boundingBox, Int(bufferSize.width), Int(bufferSize.height))
       
       if topLabelObservation.identifier == label {
         let minY:CGFloat = height - objectBounds.minY // 画像の下側の値を返すので反転
@@ -63,17 +64,11 @@ class ObjectDetaction: ObservableObject {
         bboxes.append(contentsOf: bbox)
       }
     }
-    uiImage = poseEstimation.run(sourceImage: self.originalImage!, boxes: bboxes)
   }
   
-  func prediction(imageBuffer: UIImage) {
-    self.originalImage = imageBuffer
-    let exifOrientation: CGImagePropertyOrientation = .up
-    let imageRequestHandler = VNImageRequestHandler(cgImage: imageBuffer.cgImage!, orientation: exifOrientation, options: [:])
-    do {
-      try imageRequestHandler.perform(self.requests)
-    } catch {
-      print(error)
-    }
+  func prediction(uiImage: UIImage, orientation: CGImagePropertyOrientation = .up) throws -> [Double] {
+    self.originalImage = uiImage
+    try runCoreML(uiImage: uiImage, orientation: orientation)
+    return bboxes
   }
 }

@@ -2,7 +2,7 @@ import SwiftUI
 import Vision
 
 class PoseEstimation: ObservableObject {
-  
+  let modelName = "vitpose-b256x192_fp16"
   @Published var uiImage: UIImage?
   var poses = [HumanPose]()
   let modelWidth = 192
@@ -24,7 +24,7 @@ class PoseEstimation: ObservableObject {
   func setupVision() -> NSError? {
     let error: NSError! = nil
     do {
-      guard let modelURL = Bundle.main.url(forResource: "vitpose-b256x192_fp16", withExtension: "mlmodelc") else {
+      guard let modelURL = Bundle.main.url(forResource: modelName, withExtension: "mlmodelc") else {
         return NSError(domain: "TopDownPoseEstimation", code: -1, userInfo: [NSLocalizedDescriptionKey: "Model file is missing"])
       }
       let visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL))
@@ -35,27 +35,23 @@ class PoseEstimation: ObservableObject {
     return error
   }
   
-  func run(sourceImage: UIImage, boxes: [Double]) -> UIImage? {
+  func prediction(uiImage: UIImage, boxes: [Double]) throws -> UIImage? {
     poses = [HumanPose]()
     let personNum = boxes.count / 4
     for num in 0..<personNum {
       box = CGRect(x: boxes[num*4], y: boxes[num*4+1], width: boxes[num*4+2], height: boxes[num*4+3])
-      if let uiImage = keypointProcess.preExecute(image: sourceImage, box: box){
-        runCoreML(uiImage: uiImage)
+      if let uiImage = keypointProcess.preExecute(image: uiImage, box: box){
+        try runCoreML(uiImage: uiImage)
       }
     }
-    let render = PoseRender(sourceImage, poses: poses)
+    let render = PoseRender(uiImage, poses: poses)
     return render.render()
   }
   
-  func runCoreML(uiImage: UIImage) {
+  func runCoreML(uiImage: UIImage) throws {
     let cgiImage = uiImage.cgImage!
     let classifierRequestHandler = VNImageRequestHandler(cgImage: cgiImage, options: [:])
-    do {
-      try classifierRequestHandler.perform(requests)
-    } catch {
-      print(error.localizedDescription)
-    }
+    try classifierRequestHandler.perform(requests)
   }
   
   func visionPoseEstimationResults(request: VNRequest, error: Error?){
