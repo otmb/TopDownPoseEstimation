@@ -80,13 +80,13 @@ class KeyPointProcess {
     srcPoint[0] = center
     srcPoint[1] = CGPoint(x: center.x + src_dir[0], y: center.y + src_dir[1])
     srcPoint[2] = get3rdPoint(srcPoint[0], srcPoint[1])
-    let src = Triangle(point1: srcPoint[0], point2: srcPoint[1], point3: srcPoint[2])
+    let src = Triangle(srcPoint[0].vector2, srcPoint[1].vector2, srcPoint[2].vector2)
     
     var dstPoint = Array(repeating: CGPoint(), count : 3)
     dstPoint[0] = CGPoint(x: dst_w * 0.5, y: dst_h * 0.5)
     dstPoint[1] = CGPoint(x: dst_w * 0.5 + dst_dir[0], y: dst_h * 0.5 + dst_dir[1])
     dstPoint[2] = get3rdPoint(dstPoint[0], dstPoint[1])
-    let dst = Triangle(point1: dstPoint[0], point2: dstPoint[1], point3: dstPoint[2])
+    let dst = Triangle(dstPoint[0].vector2, dstPoint[1].vector2, dstPoint[2].vector2)
     
     if (inv == 0) {
       return cgAffineTransform(from: src, to: dst)
