@@ -60,9 +60,9 @@ class KeyPointProcess {
     return HumanPose(keypoints: preds, scores: maxvals, box: box)
   }
   
-  func get3rdPoint(_ a: CGPoint,_ b: CGPoint) -> CGPoint {
-    let direct = CGPoint(x: a.x - b.x, y: a.y - b.y)
-    return CGPoint(x: a.x - direct.y, y: a.y + direct.x)
+  func get3rdPoint(_ a: simd_double3,_ b: simd_double3) -> simd_double3 {
+    let direct = simd_double2(a.x - b.x, a.y - b.y)
+    return simd_double3(a.x - direct.y, a.y + direct.x, 1)
   }
   
   func getAffineTransform(center: CGPoint, scale: CGPoint, rot: Double,
@@ -76,17 +76,13 @@ class KeyPointProcess {
     let src_dir = [-0.5 * src_w, 0.0, rot_rad]
     let dst_dir = [-0.5 * dst_w, 0.0]
     
-    var srcPoint = Array(repeating: CGPoint(), count : 3)
-    srcPoint[0] = center
-    srcPoint[1] = CGPoint(x: center.x + src_dir[0], y: center.y + src_dir[1])
-    srcPoint[2] = get3rdPoint(srcPoint[0], srcPoint[1])
-    let src = Triangle(srcPoint[0].vector2, srcPoint[1].vector2, srcPoint[2].vector2)
+    let src1 = simd_double3(center.x, center.y, 1)
+    let src2 = simd_double3(center.x + src_dir[0], center.y + src_dir[1], 1)
+    let src = simd_double3x3(src1, src2, get3rdPoint(src1, src2))
     
-    var dstPoint = Array(repeating: CGPoint(), count : 3)
-    dstPoint[0] = CGPoint(x: dst_w * 0.5, y: dst_h * 0.5)
-    dstPoint[1] = CGPoint(x: dst_w * 0.5 + dst_dir[0], y: dst_h * 0.5 + dst_dir[1])
-    dstPoint[2] = get3rdPoint(dstPoint[0], dstPoint[1])
-    let dst = Triangle(dstPoint[0].vector2, dstPoint[1].vector2, dstPoint[2].vector2)
+    let dst1 = simd_double3(dst_w * 0.5, dst_h * 0.5, 1)
+    let dst2 = simd_double3(dst_w * 0.5 + dst_dir[0], dst_h * 0.5 + dst_dir[1], 1)
+    let dst = simd_double3x3(dst1, dst2, get3rdPoint(dst1, dst2))
     
     if (inv == 0) {
       return cgAffineTransform(from: src, to: dst)
@@ -156,9 +152,25 @@ class KeyPointProcess {
   }
   
   func affineTransform(point: CGPoint, trans: double2x3) -> CGPoint {
-    let pt = simd_double3(point.x, point.y, 1.0)
-    let w:simd_double2 = simd_mul(pt, trans)
+    let w = simd_double3(point.x, point.y, 1) * trans
     return CGPoint(x: w.x, y: w.y)
+  }
+  
+  // https://rethunk.medium.com/perspective-transform-from-quadrilateral-to-quadrilateral-in-swift-using-simd-for-matrix-operations-15dc3f090860
+  // Gary Bartos
+  func affineTransform(from: double3x3, to: double3x3) -> double3x3? {
+    let invA = from.inverse
+    if invA.determinant.isNaN {
+      return nil
+    }
+    return to * invA
+  }
+  
+  func cgAffineTransform(from: double3x3, to: double3x3) -> CGAffineTransform? {
+    guard let M = affineTransform(from: from, to: to) else {
+      return nil
+    }
+    return M.toCGAffineTransform
   }
 }
 
@@ -175,5 +187,12 @@ extension UIImage {
     let result = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
     return result
+  }
+}
+
+extension double3x3 {
+  var toCGAffineTransform: CGAffineTransform {
+    let (m1, m2, m3) = self.columns
+    return CGAffineTransform(a: m1.x, b: m1.y, c: m2.x, d: m2.y, tx: m3.x, ty: m3.y)
   }
 }
