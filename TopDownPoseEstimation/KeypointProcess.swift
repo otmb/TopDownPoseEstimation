@@ -13,8 +13,8 @@ class KeyPointProcess {
   init(modelWidth: Int, modelHeight: Int, keypointsNumber: Int = 17){
     self.modelWidth = modelWidth
     self.modelHeight = modelHeight
-    self.heatmapWidth = Int(modelWidth / 4)
-    self.heatmapHeight = Int(modelHeight / 4)
+    self.heatmapWidth = modelWidth / 4
+    self.heatmapHeight = modelHeight / 4
     self.keypointsNumber = keypointsNumber
   }
   
@@ -61,8 +61,8 @@ class KeyPointProcess {
   }
   
   func get3rdPoint(_ a: simd_double3,_ b: simd_double3) -> simd_double3 {
-    let direct = simd_double2(a.x - b.x, a.y - b.y)
-    return simd_double3(a.x - direct.y, a.y + direct.x, 1)
+    let direct = a - b
+    return a + simd_double3(-direct.y, direct.x, 0)
   }
   
   func getAffineTransform(center: CGPoint, scale: CGPoint, rot: Double,
@@ -71,9 +71,8 @@ class KeyPointProcess {
     let src_w = scale.x
     let dst_w = Double(outputSize.width)
     let dst_h = Double(outputSize.height)
-    let rot_rad = rot * .pi / 180
     
-    let src_dir = [-0.5 * src_w, 0.0, rot_rad]
+    let src_dir = [-0.5 * src_w, 0.0]
     let dst_dir = [-0.5 * dst_w, 0.0]
     
     let src1 = simd_double3(center.x, center.y, 1)
@@ -170,7 +169,8 @@ class KeyPointProcess {
     guard let M = affineTransform(from: from, to: to) else {
       return nil
     }
-    return M.toCGAffineTransform
+    let (m1, m2, m3) = M.columns
+    return CGAffineTransform(a: m1.x, b: m1.y, c: m2.x, d: m2.y, tx: m3.x, ty: m3.y)
   }
 }
 
@@ -180,9 +180,11 @@ class KeyPointProcess {
 extension UIImage {
   func transformed(by transform: CGAffineTransform, size: CGSize) -> UIImage? {
     UIGraphicsBeginImageContext(size)
-    let context = UIGraphicsGetCurrentContext()
-    let orig = CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height)
-    context?.concatenate(transform)
+    guard let context = UIGraphicsGetCurrentContext() else {
+      return nil
+    }
+    context.concatenate(transform)
+    let orig = CGRect(origin: .zero, size: self.size)
     self.draw(in: orig)
     let result = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
