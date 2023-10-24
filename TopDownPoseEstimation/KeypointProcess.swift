@@ -23,7 +23,7 @@ class KeyPointProcess {
     let _scale = CGPoint(x: scale.x * pixelStd, y: scale.y * pixelStd)
     let outputSize = CGSize(width: modelWidth, height: modelHeight)
     if let trans = getAffineTransform(center: center, scale: _scale,
-                                      rot: 0, outputSize: outputSize, inv: 0) {
+                                      outputSize: outputSize, inv: 0) {
       return image.transformed(by: trans, size: outputSize)
     }
     return nil
@@ -65,7 +65,7 @@ class KeyPointProcess {
     return a + simd_double3(-direct.y, direct.x, 0)
   }
   
-  func getAffineTransform(center: CGPoint, scale: CGPoint, rot: Double,
+  func getAffineTransform(center: CGPoint, scale: CGPoint,
                           outputSize: CGSize, inv: Int) -> CGAffineTransform? {
     
     let src_w = scale.x
@@ -137,7 +137,7 @@ class KeyPointProcess {
                       scale: CGPoint, outputSize: CGSize) -> [CGPoint]? {
     
     guard let t = getAffineTransform(center: center, scale: scale,
-                                     rot: 0, outputSize: outputSize, inv: 1) else {
+                                     outputSize: outputSize, inv: 1) else {
       return nil
     }
     
