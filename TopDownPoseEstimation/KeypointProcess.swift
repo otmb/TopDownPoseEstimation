@@ -60,9 +60,9 @@ class KeyPointProcess {
     return HumanPose(keypoints: preds, scores: maxvals, box: box)
   }
   
-  func get3rdPoint(_ a: simd_double3,_ b: simd_double3) -> simd_double3 {
+  func get3rdPoint(_ a: simd_double2,_ b: simd_double2) -> simd_double2 {
     let direct = a - b
-    return a + simd_double3(-direct.y, direct.x, 0)
+    return a + simd_double2(-direct.y, direct.x)
   }
   
   func getAffineTransform(center: CGPoint, scale: CGPoint,
@@ -75,19 +75,25 @@ class KeyPointProcess {
     let src_dir = [-0.5 * src_w, 0.0]
     let dst_dir = [-0.5 * dst_w, 0.0]
     
-    let src1 = simd_double3(center.x, center.y, 1)
-    let src2 = simd_double3(center.x + src_dir[0], center.y + src_dir[1], 1)
-    let src = simd_double3x3(src1, src2, get3rdPoint(src1, src2))
+    let src1 = simd_double2(center.x, center.y)
+    let src2 = simd_double2(center.x + src_dir[0], center.y + src_dir[1])
+    let src = toMatrix(src1, src2, get3rdPoint(src1, src2))
     
-    let dst1 = simd_double3(dst_w * 0.5, dst_h * 0.5, 1)
-    let dst2 = simd_double3(dst_w * 0.5 + dst_dir[0], dst_h * 0.5 + dst_dir[1], 1)
-    let dst = simd_double3x3(dst1, dst2, get3rdPoint(dst1, dst2))
+    let dst1 = simd_double2(dst_w * 0.5, dst_h * 0.5)
+    let dst2 = simd_double2(dst_w * 0.5 + dst_dir[0], dst_h * 0.5 + dst_dir[1])
+    let dst = toMatrix(dst1, dst2, get3rdPoint(dst1, dst2))
     
     if (inv == 0) {
       return cgAffineTransform(from: src, to: dst)
     } else {
       return cgAffineTransform(from: dst, to: src)
     }
+  }
+  
+  func toMatrix(_ p1: simd_double2, 
+                _ p2: simd_double2,
+                _ p3: simd_double2) -> double3x3 {
+    return double3x3(p1.toVector3(), p2.toVector3(), p3.toVector3())
   }
   
   func box2cs(box: CGRect) -> (center: CGPoint, scale: CGPoint) {
@@ -196,5 +202,11 @@ extension double3x3 {
   var toCGAffineTransform: CGAffineTransform {
     let (m1, m2, m3) = self.columns
     return CGAffineTransform(a: m1.x, b: m1.y, c: m2.x, d: m2.y, tx: m3.x, ty: m3.y)
+  }
+}
+
+extension simd_double2 {
+  func toVector3() -> simd_double3 {
+    simd_double3(self.x, self.y, 1)
   }
 }
