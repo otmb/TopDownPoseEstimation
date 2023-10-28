@@ -23,7 +23,9 @@ struct ContentView: View {
       if let uiImage = uiImage {
         let boxes = try detection.prediction(uiImage: uiImage)
         if boxes.count > 0 {
-          image = try poseEstimation.prediction(uiImage: uiImage, boxes: boxes)
+          let poses = try poseEstimation.prediction(uiImage: uiImage, boxes: boxes)
+          let render = PoseRender(uiImage, poses: poses)
+          image = render.render()
         }
       }
     } catch {

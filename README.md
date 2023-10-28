@@ -17,9 +17,15 @@ $ curl -OL https://github.com/mbotsu/KeypointDecoder/releases/download/0.0.1/yol
 
 <img src="sample.png" width="500" />
 
-## COCO MS val set
+## COCO MS val2017
 
-Unrated
+| Models | AP |
+|--|:--|
+| yolov7-tiny_fp16 + vitpose-b256x192_fp16.mlmodel | 0.589 |
+| yolov7-tiny_fp16 + vitpose_s256x192_wholebody_fp16.mlmodel | 0.579 |
+| yolov7-tiny_fp16 + vitpose_b256x192_wholebody_fp16.mlmodel | 0.600 |
+
+[Detail](tools/README.md)
 
 ## Sample Models
 

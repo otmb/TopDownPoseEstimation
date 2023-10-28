@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8D76D81F2AED073C00C669D7 /* ValTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D76D81E2AED073C00C669D7 /* ValTestView.swift */; };
 		8D80124D2AD22B8000DC7D8B /* TopDownPoseEstimationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D80124C2AD22B8000DC7D8B /* TopDownPoseEstimationApp.swift */; };
 		8D80124F2AD22B8000DC7D8B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D80124E2AD22B8000DC7D8B /* ContentView.swift */; };
 		8D8012512AD22B8200DC7D8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D8012502AD22B8200DC7D8B /* Assets.xcassets */; };
@@ -21,6 +22,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8D76D81E2AED073C00C669D7 /* ValTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValTestView.swift; sourceTree = "<group>"; };
+		8D76FF352AED2BE100C669D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D8012492AD22B8000DC7D8B /* TopDownPoseEstimation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TopDownPoseEstimation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D80124C2AD22B8000DC7D8B /* TopDownPoseEstimationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopDownPoseEstimationApp.swift; sourceTree = "<group>"; };
 		8D80124E2AD22B8000DC7D8B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -46,6 +49,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8D76D81D2AED071F00C669D7 /* ValTest */ = {
+			isa = PBXGroup;
+			children = (
+				8D76D81E2AED073C00C669D7 /* ValTestView.swift */,
+			);
+			path = ValTest;
+			sourceTree = "<group>";
+		};
 		8D8012402AD22B8000DC7D8B = {
 			isa = PBXGroup;
 			children = (
@@ -66,12 +77,14 @@
 		8D80124B2AD22B8000DC7D8B /* TopDownPoseEstimation */ = {
 			isa = PBXGroup;
 			children = (
+				8D76FF352AED2BE100C669D7 /* Info.plist */,
 				8D80124C2AD22B8000DC7D8B /* TopDownPoseEstimationApp.swift */,
 				8D80124E2AD22B8000DC7D8B /* ContentView.swift */,
 				8D8012842AD22EF500DC7D8B /* ObjectDetaction.swift */,
 				8D80127E2AD22E0C00DC7D8B /* PoseEstimation.swift */,
 				8D865C7C2AD29204003A63E2 /* KeypointProcess.swift */,
 				8D9095E02AD2D15B00411D0E /* PoseRender.swift */,
+				8D76D81D2AED071F00C669D7 /* ValTest */,
 				8D80128A2AD22F7C00DC7D8B /* test.jpg */,
 				8D8012862AD22F5D00DC7D8B /* vitpose-b256x192_fp16.mlmodel */,
 				8D8012872AD22F5D00DC7D8B /* yolov7-tiny_fp16.mlmodel */,
@@ -175,6 +188,7 @@
 				8D865C7D2AD29204003A63E2 /* KeypointProcess.swift in Sources */,
 				8D8012882AD22F5D00DC7D8B /* vitpose-b256x192_fp16.mlmodel in Sources */,
 				8D80127F2AD22E0C00DC7D8B /* PoseEstimation.swift in Sources */,
+				8D76D81F2AED073C00C669D7 /* ValTestView.swift in Sources */,
 				8D8012852AD22EF500DC7D8B /* ObjectDetaction.swift in Sources */,
 				8D9095E12AD2D15B00411D0E /* PoseRender.swift in Sources */,
 			);
@@ -313,6 +327,8 @@
 				DEVELOPMENT_TEAM = 9D57EBVY9S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TopDownPoseEstimation/Info.plist;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -342,6 +358,8 @@
 				DEVELOPMENT_TEAM = 9D57EBVY9S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TopDownPoseEstimation/Info.plist;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

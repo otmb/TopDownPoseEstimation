@@ -35,7 +35,7 @@ class PoseEstimation: ObservableObject {
     return error
   }
   
-  func prediction(uiImage: UIImage, boxes: [Double]) throws -> UIImage? {
+  func prediction(uiImage: UIImage, boxes: [Double]) throws -> [HumanPose] {
     poses = [HumanPose]()
     let personNum = boxes.count / 4
     for num in 0..<personNum {
@@ -44,8 +44,7 @@ class PoseEstimation: ObservableObject {
         try runCoreML(uiImage: uiImage)
       }
     }
-    let render = PoseRender(uiImage, poses: poses)
-    return render.render()
+    return poses
   }
   
   func runCoreML(uiImage: UIImage) throws {
