@@ -41,11 +41,10 @@ class KeyPointProcess {
       let px = Int(coord.x + 0.5)
       let py = Int(coord.y + 0.5)
       
-      if (px > 0 && px < heatmapWidth - 1) {
+      if (px > 0 && px < heatmapWidth - 1) && (py > 0 && py < heatmapHeight - 1) {
         coord.x += sign(heatmap[index + py * heatmapWidth + px + 1] -
                         heatmap[index + py * heatmapWidth + px - 1]) * 0.25
-      }
-      if (py > 0 && py < heatmapHeight - 1) {
+        
         coord.y += sign(heatmap[index + (py + 1) * heatmapWidth + px] -
                         heatmap[index + (py - 1) * heatmapWidth + px]) * 0.25
       }
