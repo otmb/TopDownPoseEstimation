@@ -52,7 +52,7 @@ struct ValTestView: View {
     
     let regex = /^(\d{12})\.jpg$/
     let fileList = files.filter { $0.contains(regex) }
-    let fileCount = fileList.count
+    let fileCount = fileList.count - 1
     for (idx, file) in fileList.enumerated() {
       await MainActor.run {
         progress = Double(idx) / Double(fileCount)
